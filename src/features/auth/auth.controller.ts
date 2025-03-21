@@ -48,7 +48,6 @@ export const login = (req: Request, res: Response, next: NextFunction) => {
       sendTokens(res, user, 200);
     })(req, res, next);
   } catch (err) {
-    // Forward validation errors to error handler
     next(err);
   }
 };
