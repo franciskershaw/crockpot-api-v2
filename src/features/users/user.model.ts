@@ -5,7 +5,6 @@ interface IUser extends Document {
   email: string;
   password?: string;
   name: string;
-  username?: string;
   role: "user" | "admin";
   provider: "google" | "local";
   googleId?: string;
@@ -33,14 +32,11 @@ const UserSchema = new mongoose.Schema(
     password: {
       type: String,
       required: false,
+      select: false,
     },
     name: {
       type: String,
       required: true,
-    },
-    username: {
-      type: String,
-      unique: true,
     },
     role: {
       type: String,
