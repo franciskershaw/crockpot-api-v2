@@ -9,6 +9,7 @@ import cors from "cors";
 import helmet from "helmet";
 import passport from "./core/config/passport";
 import authRoutes from "./features/auth/auth.routes";
+import userRoutes from "./features/users/user.routes";
 
 // Declare port to run the server on
 const PORT = process.env.PORT || 5000;
@@ -46,6 +47,7 @@ app.use(passport.initialize());
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
 
 // Welcome message
 app.get("/", (req, res) => {
