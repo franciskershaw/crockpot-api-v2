@@ -31,10 +31,8 @@ const sendTokens = async (res: Response, user: IUser, status: number = 200) => {
 // Local login controller
 export const login = (req: Request, res: Response, next: NextFunction) => {
   try {
-    // Add validation using the existing loginSchema
-    const value = validateRequest(req.body, loginSchema);
-    
-    // If validation passes, proceed with authentication
+    validateRequest(req.body, loginSchema);
+
     passport.authenticate("local", (err: any, user: IUser | undefined) => {
       if (err) {
         console.error("Authentication error:", err);
