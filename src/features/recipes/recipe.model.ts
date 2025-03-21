@@ -1,18 +1,6 @@
 import mongoose, { CallbackError, Document, Model, ObjectId } from "mongoose";
 import User from "../users/user.model";
 
-const ingredientSchema = new mongoose.Schema(
-  {
-    _id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Item",
-    },
-    quantity: Number,
-    unit: String,
-  },
-  { _id: false }
-);
-
 interface IRecipe extends Document {
   name: string;
   timeInMinutes: number;
@@ -46,7 +34,24 @@ const RecipeSchema = new mongoose.Schema({
     url: String,
     filename: String,
   },
-  ingredients: [ingredientSchema],
+  ingredients: [
+    {
+      item: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Item",
+        required: true,
+      },
+      quantity: {
+        type: Number,
+        required: true,
+      },
+      unit: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Unit",
+        required: true,
+      },
+    },
+  ],
   instructions: [
     {
       type: String,
@@ -78,31 +83,6 @@ const RecipeSchema = new mongoose.Schema({
     required: true,
   },
 });
-
-RecipeSchema.pre(
-  "deleteOne",
-  { document: true, query: false },
-  async function (next) {
-    try {
-      const recipeId = this._id;
-      // remove recipe id from user's 'favouriteRecipes'
-      await User.updateMany(
-        { favouriteRecipes: recipeId },
-        { $pull: { favouriteRecipes: recipeId } }
-      );
-
-      // remove recipe id from user's 'recipeMenu'
-      await User.updateMany(
-        { "recipeMenu._id": recipeId },
-        { $pull: { recipeMenu: { _id: recipeId } } }
-      );
-
-      next();
-    } catch (error) {
-      next(error as CallbackError);
-    }
-  }
-);
 
 const Recipe: Model<IRecipe> = mongoose.model<IRecipe>("Recipe", RecipeSchema);
 export default Recipe;

@@ -1,7 +1,6 @@
-import mongoose, { Model, ObjectId } from "mongoose";
+import mongoose, { Model, ObjectId, Document } from "mongoose";
 
-interface IItem {
-  _id: ObjectId;
+interface IItem extends Document {
   name: string;
   category: ObjectId;
   validUnits: ObjectId[]; // References to valid Unit documents
@@ -17,7 +16,7 @@ const ItemSchema = new mongoose.Schema({
   },
   category: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Category",
+    ref: "ItemCategory", // Fixed reference to correct model
     required: true,
   },
   validUnits: {

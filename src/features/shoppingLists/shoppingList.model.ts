@@ -1,7 +1,6 @@
-import mongoose, { Model, ObjectId } from "mongoose";
+import mongoose, { Model, ObjectId, Document } from "mongoose";
 
-interface IShoppingListItem {
-  _id: ObjectId;
+interface IShoppingListItem extends Document {
   item: ObjectId; // Reference to Item
   quantity: number;
   unit: ObjectId; // Reference to Unit
@@ -14,8 +13,7 @@ interface IShoppingListItem {
   }[];
 }
 
-interface IShoppingList {
-  _id: ObjectId;
+interface IShoppingList extends Document {
   user: ObjectId;
   items: IShoppingListItem[];
   createdAt: Date;

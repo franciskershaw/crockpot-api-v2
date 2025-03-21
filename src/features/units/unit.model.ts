@@ -1,10 +1,10 @@
 import mongoose, { ObjectId, Document, Model } from "mongoose";
 
 interface IUnit extends Document {
-  _id: ObjectId;
   name: string;
   abbreviation: string;
   type: "weight" | "volume" | "count" | "custom";
+  isStandardUnit?: boolean; // Useful flag for identifying standard units
   conversions?: {
     // Optional conversion factors to standard units
     toStandard: number; // e.g., 1 tbsp = 15 ml, so toStandard = 15
@@ -27,6 +27,10 @@ const UnitSchema = new mongoose.Schema({
     type: String,
     enum: ["weight", "volume", "count", "custom"],
     required: true,
+  },
+  isStandardUnit: {
+    type: Boolean,
+    default: false,
   },
   conversions: {
     type: {
@@ -56,15 +60,6 @@ UnitSchema.pre("save", async function (next) {
     // Ensure the standard unit is of the same type
     if (standardUnit.type !== this.type) {
       return next(new Error("Standard unit must be of the same type"));
-    }
-
-    // Prevent circular references
-    if (
-      standardUnit.conversions &&
-      standardUnit.conversions.standardUnit &&
-      standardUnit.conversions.standardUnit.equals(this._id)
-    ) {
-      return next(new Error("Circular reference in standard unit"));
     }
   }
   next();
