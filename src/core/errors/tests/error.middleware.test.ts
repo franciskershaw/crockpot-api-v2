@@ -7,7 +7,7 @@ import {
   ConflictError,
   InternalServerError,
 } from "../errors";
-import { createMockRequestResponse } from "../../../../test/utils/testUtils";
+import { createMockRequestResponse } from "../../../test/utils/testUtils";
 
 // Mock console.log to avoid cluttering test output
 console.log = jest.fn();

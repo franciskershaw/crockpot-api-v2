@@ -2,8 +2,8 @@ import { authenticateToken, refreshTokens } from "../auth.middleware";
 import * as jwt from "../../../core/utils/jwt";
 import { Request, Response } from "express";
 import { UnauthorizedError, ForbiddenError } from "../../../core/errors/errors";
-import { createMockRequestResponse } from "../../../../test/utils/testUtils";
-import { createTestUserObject } from "../../../../test/utils/authMocks";
+import { createMockRequestResponse } from "../../../test/utils/testUtils";
+import { createTestUserObject } from "../../../test/utils/authMocks";
 
 jest.mock("../../../core/utils/jwt", () => ({
   verifyAccessToken: jest.fn(),

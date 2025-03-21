@@ -9,7 +9,7 @@ import { BadRequestError } from "../../../core/errors/errors";
 import {
   createTestApp,
   generateTestUser,
-} from "../../../../test/utils/testUtils";
+} from "../../../test/utils/testUtils";
 
 // Properly mock JWT functions
 jest.spyOn(jwt, "generateAccessToken").mockReturnValue("mock-access-token");

@@ -5,7 +5,7 @@ import {
   ConflictError,
   UnauthorizedError,
   ForbiddenError,
-} from "../../src/core/errors/errors";
+} from "../../core/errors/errors";
 import passport from "passport";
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";

@@ -1,4 +1,4 @@
-import { BadRequestError } from "../../src/core/errors/errors";
+import { BadRequestError } from "../../core/errors/errors";
 import { Schema } from "joi";
 
 /**

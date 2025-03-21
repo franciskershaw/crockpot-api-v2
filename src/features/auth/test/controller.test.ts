@@ -7,7 +7,7 @@ import {
   ConflictError,
   InternalServerError,
 } from "../../../core/errors/errors";
-import { createMockRequestResponse } from "../../../../test/utils/testUtils";
+import { createMockRequestResponse } from "../../../test/utils/testUtils";
 import passport from "passport";
 
 jest.mock("../../users/user.model");
