@@ -5,7 +5,6 @@ import { UnauthorizedError, ForbiddenError } from "../../../core/errors/errors";
 import { createMockRequestResponse } from "../../../../test/utils/testUtils";
 import { createTestUserObject } from "../../../../test/utils/authMocks";
 
-// Mock jwt utils
 jest.mock("../../../core/utils/jwt", () => ({
   verifyAccessToken: jest.fn(),
   verifyRefreshToken: jest.fn(),

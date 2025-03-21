@@ -28,7 +28,7 @@ describe("Auth Validation Schemas", () => {
     it("should reject a payload with short password", () => {
       const invalidPayload = {
         email: "test@example.com",
-        password: "pass", // Less than 6 characters
+        password: "pass",
         name: "Test User",
       };
 

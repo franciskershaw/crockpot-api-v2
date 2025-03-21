@@ -91,13 +91,10 @@ jest.mock("../../users/user.model", () => {
   };
 });
 
-// Define utility functions for tests
-
 describe("Auth Routes", () => {
   let app: express.Application;
 
   beforeEach(async () => {
-    // Clean up test data
     if (
       mongoose.connection.readyState &&
       User.deleteMany &&
@@ -107,7 +104,6 @@ describe("Auth Routes", () => {
     }
     jest.clearAllMocks();
 
-    // Create the app once per test
     app = createTestApp("/api/auth", authRoutes);
   });
 
@@ -125,7 +121,6 @@ describe("Auth Routes", () => {
 
       expect(response.status).toBe(201);
 
-      // Verify response
       expect(response.body).toHaveProperty("_id");
       expect(response.body).toHaveProperty("email", userData.email);
       expect(response.body).toHaveProperty("name", userData.name);
@@ -148,7 +143,6 @@ describe("Auth Routes", () => {
     });
 
     it("should reject registration with existing email", async () => {
-      // Mock findOne to return a user, indicating duplicate email
       (User.findOne as jest.Mock).mockResolvedValueOnce({
         email: "duplicate@example.com",
       });
@@ -209,14 +203,12 @@ describe("Auth Routes", () => {
         "Logged out successfully"
       );
 
-      // Verify cookie is set to expire
       expect(response.headers["set-cookie"]).toBeDefined();
       const cookies = response.headers["set-cookie"];
       if (cookies && Array.isArray(cookies)) {
         const refreshTokenCookie = cookies.find((cookie) =>
           cookie.startsWith("refreshToken=")
         );
-        console.log("refreshTokenCookie", refreshTokenCookie);
         expect(refreshTokenCookie).toBeDefined();
         if (refreshTokenCookie) {
           expect(refreshTokenCookie).toContain("refreshToken=");
@@ -227,7 +219,6 @@ describe("Auth Routes", () => {
 
   describe("GET /api/auth/refresh-token", () => {
     it("should issue new tokens with valid refresh token", async () => {
-      // Set up the jwt.verifyRefreshToken mock for this test only
       (jwt.verifyRefreshToken as jest.Mock).mockReturnValueOnce({
         _id: "mockuserid",
         email: "test@example.com",
@@ -251,7 +242,6 @@ describe("Auth Routes", () => {
     });
 
     it("should reject request with invalid refresh token", async () => {
-      // Make sure verifyRefreshToken returns null for this test
       (jwt.verifyRefreshToken as jest.Mock).mockReturnValueOnce(null);
 
       const response = await request(app)

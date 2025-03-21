@@ -6,12 +6,10 @@ import bcrypt from "bcryptjs";
 import { ConflictError } from "../../../core/errors/errors";
 import { createMockRequestResponse } from "../../../../test/utils/testUtils";
 
-// Mock dependencies
 jest.mock("../../users/user.model");
 jest.mock("../../../core/utils/jwt");
 jest.mock("bcryptjs");
 
-// Simple validation mock - directly defined to avoid circular dependencies
 jest.mock("../../../core/utils/validate", () => jest.fn((data) => data));
 
 describe("Auth Controller", () => {
@@ -32,7 +30,6 @@ describe("Auth Controller", () => {
 
   describe("register", () => {
     it("should return 201 and tokens when registration is successful", async () => {
-      // Setup
       const userData = {
         email: "test@example.com",
         password: "password123",
@@ -83,7 +80,6 @@ describe("Auth Controller", () => {
     });
 
     it("should call next with ConflictError when user already exists", async () => {
-      // Setup
       const userData = {
         email: "existing@example.com",
         password: "password123",
@@ -99,14 +95,12 @@ describe("Auth Controller", () => {
 
       (User.findOne as jest.Mock).mockResolvedValue(existingUser);
 
-      // Execute
       await register(
         mockRequest as Request,
         mockResponse as Response,
         nextFunction
       );
 
-      // Assert
       expect(User.findOne).toHaveBeenCalledWith({ email: userData.email });
       expect(nextFunction).toHaveBeenCalledWith(expect.any(ConflictError));
     });
@@ -120,7 +114,6 @@ describe("Auth Controller", () => {
 
   describe("googleCallback", () => {
     it("should redirect with tokens when user is authenticated", () => {
-      // Setup
       const user = {
         _id: "user123",
         email: "google@example.com",
@@ -129,7 +122,6 @@ describe("Auth Controller", () => {
       mockRequest.user = user;
 
       (jwt.generateRefreshToken as jest.Mock).mockReturnValue("refresh_token");
-      process.env.CORS_ORIGIN = "http://localhost:3000";
 
       // Execute
       googleCallback(mockRequest as Request, mockResponse as Response);
@@ -138,18 +130,15 @@ describe("Auth Controller", () => {
       expect(jwt.generateRefreshToken).toHaveBeenCalledWith(user);
       expect(mockResponse.cookie).toHaveBeenCalled();
       expect(mockResponse.redirect).toHaveBeenCalledWith(
-        "http://localhost:3000"
+        process.env.CORS_ORIGIN
       );
     });
 
     it("should return 401 when user is not authenticated", () => {
-      // Setup
       mockRequest.user = undefined;
 
-      // Execute
       googleCallback(mockRequest as Request, mockResponse as Response);
 
-      // Assert
       expect(mockResponse.status).toHaveBeenCalledWith(401);
       expect(mockResponse.json).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -161,10 +150,8 @@ describe("Auth Controller", () => {
 
   describe("logout", () => {
     it("should clear cookie and return success message", () => {
-      // Execute
       logout(mockRequest as Request, mockResponse as Response);
 
-      // Assert
       expect(mockResponse.clearCookie).toHaveBeenCalledWith("refreshToken");
       expect(mockResponse.json).toHaveBeenCalledWith(
         expect.objectContaining({
