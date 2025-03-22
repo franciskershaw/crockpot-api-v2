@@ -8,13 +8,17 @@ export const createItemCategory = async (
   res: Response,
   next: NextFunction
 ) => {
-  const value = validateRequest(req.body, createItemCategorySchema);
+  try {
+    const value = validateRequest(req.body, createItemCategorySchema);
 
-  const { name, faIcon } = value;
+    const { name, faIcon } = value;
 
-  const itemCategory = new ItemCategory({ name, faIcon });
+    const itemCategory = new ItemCategory({ name, faIcon });
 
-  await itemCategory.save();
+    await itemCategory.save();
 
-  res.status(201).json(itemCategory);
+    res.status(201).json(itemCategory);
+  } catch (error) {
+    next(error);
+  }
 };
