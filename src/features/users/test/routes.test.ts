@@ -26,25 +26,20 @@ describe("User Routes", () => {
       provider: "local",
       favouriteRecipes: [],
       recipeMenu: [],
-      regularItems: [],
+      regularItems: []
     };
 
-    // Mock the authentication middleware
+    // Mock the authentication middleware to set the complete user
     (authMiddleware.authenticateToken as jest.Mock).mockImplementation(
       (req, res, next) => {
-        req.user = { _id: mockUserId };
+        // Set the FULL user object now
+        req.user = {
+          ...mockUser,
+          _id: mockUserId
+        };
         next();
       }
     );
-
-    // Mock User.findById to return user with toString() for _id
-    (User.findById as jest.Mock).mockImplementation(() => {
-      // Convert ObjectId to string to match how it gets serialized in responses
-      return {
-        ...mockUser,
-        _id: mockUserId.toString(),
-      };
-    });
   });
 
   describe("GET /", () => {
@@ -55,13 +50,13 @@ describe("User Routes", () => {
       // Make request
       const response = await request(app).get("/api/users/");
 
-      // Assert response - expecting stringified _id in response body
+      // Assert response
       expect(response.status).toBe(200);
       expect(response.body._id).toBe(mockUserId.toString());
       expect(response.body.email).toBe(mockUser.email);
       expect(response.body.name).toBe(mockUser.name);
       expect(authMiddleware.authenticateToken).toHaveBeenCalled();
-      expect(User.findById).toHaveBeenCalledWith(mockUserId);
+      // No longer expect User.findById to be called
     });
 
     it("should not allow access when authentication fails", async () => {

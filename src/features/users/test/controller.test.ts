@@ -23,7 +23,7 @@ describe("User Controller", () => {
   });
 
   describe("getUserInfo", () => {
-    it("should return user information when valid user is authenticated", async () => {
+    it("should return user information from req.user", async () => {
       // Setup
       const userId = new mongoose.Types.ObjectId();
       const mockUser = {
@@ -34,14 +34,11 @@ describe("User Controller", () => {
         provider: "local",
         favouriteRecipes: [],
         recipeMenu: [],
-        regularItems: [],
+        regularItems: []
       };
 
       // Set the authenticated user in the request
-      mockRequest.user = { _id: userId };
-
-      // Mock the User.findById to return our test user
-      (User.findById as jest.Mock).mockResolvedValue(mockUser);
+      mockRequest.user = mockUser;
 
       // Execute
       await getUserInfo(
@@ -51,21 +48,19 @@ describe("User Controller", () => {
       );
 
       // Assert
-      expect(User.findById).toHaveBeenCalledWith(userId);
       expect(mockResponse.status).toHaveBeenCalledWith(200);
       expect(mockResponse.json).toHaveBeenCalledWith(mockUser);
     });
 
-    it("should call next with error when User.findById throws an error", async () => {
+    it("should call next with error if an exception occurs", async () => {
       // Setup
-      const userId = new mongoose.Types.ObjectId();
-      const error = new Error("Database error");
-
-      // Set the authenticated user in the request
-      mockRequest.user = { _id: userId };
-
-      // Mock the User.findById to throw an error
-      (User.findById as jest.Mock).mockRejectedValue(error);
+      mockRequest.user = {}; // Set minimal user
+      
+      // Make response.json throw an error
+      const error = new Error("Response error");
+      mockResponse.json = jest.fn().mockImplementation(() => {
+        throw error;
+      });
 
       // Execute
       await getUserInfo(
@@ -75,7 +70,6 @@ describe("User Controller", () => {
       );
 
       // Assert
-      expect(User.findById).toHaveBeenCalledWith(userId);
       expect(nextFunction).toHaveBeenCalledWith(error);
     });
   });
