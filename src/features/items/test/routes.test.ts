@@ -15,6 +15,54 @@ describe("Item Routes", () => {
     jest.clearAllMocks();
   });
 
+  describe("GET /category", () => {
+    it("should return all item categories", async () => {
+      // Mock data
+      const mockCategories = [
+        { _id: "1", name: "Category 1", faIcon: "fa-cat1" },
+        { _id: "2", name: "Category 2", faIcon: "fa-cat2" },
+      ];
+
+      // Mock controller to return categories
+      (itemController.getAllItemCategories as jest.Mock).mockImplementation(
+        (req, res, next) => {
+          res.status(200).json(mockCategories);
+        }
+      );
+
+      // Create test app
+      const app = createTestApp("/api/items", itemRoutes);
+
+      // Make request
+      const response = await request(app).get("/api/items/category");
+
+      // Assert
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(mockCategories);
+      expect(itemController.getAllItemCategories).toHaveBeenCalled();
+    });
+
+    it("should handle errors from the controller", async () => {
+      // Mock controller to throw an error
+      (itemController.getAllItemCategories as jest.Mock).mockImplementation(
+        (req, res, next) => {
+          next(new Error("Test error"));
+        }
+      );
+
+      // Create test app
+      const app = createTestApp("/api/items", itemRoutes);
+
+      // Make request
+      const response = await request(app).get("/api/items/category");
+
+      // Assert
+      expect(response.status).toBe(500); // Default error handler returns 500
+      expect(response.body).toHaveProperty("message");
+      expect(itemController.getAllItemCategories).toHaveBeenCalled();
+    });
+  });
+
   describe("POST /category", () => {
     it("should create a new item category when user is admin", async () => {
       // Mock the authentication middleware

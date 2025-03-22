@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createItemCategory } from "../item.controller";
+import { createItemCategory, getAllItemCategories } from "../item.controller";
 import { createMockRequestResponse } from "../../../test/utils/testUtils";
 import ItemCategory from "../itemCategories/itemCategory.model";
 import * as validate from "../../../core/utils/validate";
@@ -21,6 +21,47 @@ describe("Item Controller", () => {
 
   afterEach(() => {
     jest.clearAllMocks();
+  });
+
+  describe("getAllItemCategories", () => {
+    it("should return all item categories", async () => {
+      // Mock data
+      const mockCategories = [
+        { _id: "1", name: "Category 1", faIcon: "fa-cat1" },
+        { _id: "2", name: "Category 2", faIcon: "fa-cat2" },
+      ];
+
+      // Mock ItemCategory.find method
+      (ItemCategory.find as jest.Mock).mockResolvedValue(mockCategories);
+
+      // Execute the controller function
+      await getAllItemCategories(
+        mockRequest as Request,
+        mockResponse as Response,
+        nextFunction
+      );
+
+      // Assert
+      expect(ItemCategory.find).toHaveBeenCalled();
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(mockResponse.json).toHaveBeenCalledWith(mockCategories);
+    });
+
+    it("should handle errors", async () => {
+      // Mock an error
+      const mockError = new Error("Database error");
+      (ItemCategory.find as jest.Mock).mockRejectedValue(mockError);
+
+      // Execute the controller function
+      await getAllItemCategories(
+        mockRequest as Request,
+        mockResponse as Response,
+        nextFunction
+      );
+
+      // Assert error was passed to next
+      expect(nextFunction).toHaveBeenCalledWith(mockError);
+    });
   });
 
   describe("createItemCategory", () => {
