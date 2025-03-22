@@ -7,11 +7,7 @@ export const getUserInfo = async (
   next: NextFunction
 ) => {
   try {
-    const { _id } = req.user as IUser;
-
-    const user = await User.findById(_id);
-
-    res.status(200).json(user);
+    res.status(200).json(req.user);
   } catch (err) {
     next(err);
   }

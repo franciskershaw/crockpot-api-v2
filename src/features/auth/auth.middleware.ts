@@ -6,10 +6,10 @@ import {
   generateRefreshToken,
 } from "../../core/utils/jwt";
 import { UnauthorizedError, ForbiddenError } from "../../core/errors/errors";
-import { IUser } from "../users/user.model";
+import User, { IUser } from "../users/user.model";
 import { REFRESH_TOKEN_COOKIE_OPTIONS } from "../../core/utils/constants";
 
-export const authenticateToken = (
+export const authenticateToken = async (
   req: Request,
   _: Response,
   next: NextFunction
@@ -32,9 +32,25 @@ export const authenticateToken = (
     );
   }
 
-  req.user = decoded;
+  try {
+    if (typeof decoded === "object" && decoded !== null && "_id" in decoded) {
+      const user = await User.findById(decoded._id).lean();
 
-  next();
+      if (!user) {
+        return next(new UnauthorizedError("User not found", "USER_NOT_FOUND"));
+      }
+
+      req.user = user;
+
+      next();
+    } else {
+      return next(
+        new UnauthorizedError("Invalid token format", "INVALID_TOKEN_FORMAT")
+      );
+    }
+  } catch (error) {
+    next(new UnauthorizedError("Error retrieving user data"));
+  }
 };
 
 export const refreshTokens = (
@@ -66,4 +82,14 @@ export const refreshTokens = (
   res.cookie("refreshToken", newRefreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
 
   res.status(200).json({ accessToken: newAccessToken });
+};
+
+export const checkIsAdmin = (req: Request, _: Response, next: NextFunction) => {
+  const user = req.user as IUser;
+
+  if (user.role !== "admin") {
+    return next(new ForbiddenError("Admin access required"));
+  }
+
+  return next();
 };

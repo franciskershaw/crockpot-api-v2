@@ -91,7 +91,7 @@ export const register = async (
 // Google OAuth callback controller
 export const googleCallback = (req: Request, res: Response): void => {
   try {
-    const user = req.user as IUser | undefined;
+    const user = req.user as IUser;
 
     if (!user) {
       res.status(401).json({ message: "Authentication failed" });

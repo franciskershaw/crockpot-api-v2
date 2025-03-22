@@ -16,6 +16,7 @@ const config: Config = {
     "!src/server.ts",
     "!src/types/**",
     "!**/node_modules/**",
+    "!src/test/**",
   ],
   coverageDirectory: "coverage",
   coverageReporters: ["text", "lcov", "clover"],
